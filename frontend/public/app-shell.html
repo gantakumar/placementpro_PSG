@@ -1,0 +1,619 @@
+
+
+<div id="toast"></div>
+
+<!-- ══════════ PORTAL MODAL ══════════ -->
+<div id="portal-modal" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:420px;text-align:center">
+    <div class="logo-icon" style="margin:0 auto 14px;width:50px;height:50px;font-size:20px;animation:none">P</div>
+    <h2 style="font-size:22px;font-weight:700;margin-bottom:8px">Choose Your Portal</h2>
+    <p style="color:var(--tx2);font-size:14px;margin-bottom:26px">Select the portal that matches your role</p>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button class="btn btn-block" style="background:rgba(124,111,247,.12);border:1.5px solid rgba(124,111,247,.4);color:var(--pu2);padding:15px;font-size:15px;border-radius:var(--r2)" onclick="openAuth('student-login')">🎓 Student Portal</button>
+      <button class="btn btn-block" style="background:rgba(56,217,169,.08);border:1.5px solid rgba(56,217,169,.3);color:var(--gn);padding:15px;font-size:15px;border-radius:var(--r2)" onclick="openAuth('admin-login')">🛡 Alumni Portal</button>
+      <button class="btn btn-block" style="background:rgba(245,200,66,.08);border:1.5px solid rgba(245,200,66,.3);color:var(--gd);padding:15px;font-size:15px;border-radius:var(--r2)" onclick="openAuth('holder-login')">👑 Admin Portal</button>
+    </div>
+    <button style="margin-top:18px;background:none;color:var(--tx3);font-size:13px;cursor:pointer;font-family:var(--ff-body)" onclick="closePortal()">✕ Cancel</button>
+  </div>
+</div>
+
+<!-- ══════════ ALUMNI LOGIN TYPE MODAL ══════════ -->
+<div id="alumni-type-modal" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:460px">
+    <div style="text-align:center;margin-bottom:22px">
+      <div class="logo-icon" style="margin:0 auto 14px;width:50px;height:50px;font-size:20px;animation:none">P</div>
+      <h2 style="font-size:22px;font-weight:700;margin-bottom:6px">Select Your Login Type</h2>
+      <p id="alumni-type-sub" style="color:var(--tx2);font-size:14px">Choose the field you are logging in for</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-block" style="background:#7c6ff714;border:1.5px solid #7c6ff755;color:#7c6ff7;padding:14px;font-size:14px;border-radius:var(--r2);justify-content:flex-start" onclick="selectAlumniField('placement')">🏢 Placement & Corporate</button>
+      <button class="btn btn-block" style="background:#f5c84214;border:1.5px solid #f5c84255;color:#f5c842;padding:14px;font-size:14px;border-radius:var(--r2);justify-content:flex-start" onclick="selectAlumniField('entrepreneur')">🚀 Entrepreneurship</button>
+      <button class="btn btn-block" style="background:#38d9a914;border:1.5px solid #38d9a955;color:#38d9a9;padding:14px;font-size:14px;border-radius:var(--r2);justify-content:flex-start" onclick="selectAlumniField('freelancing')">💻 Freelancing</button>
+      <button class="btn btn-block" style="background:#4dabf714;border:1.5px solid #4dabf755;color:#4dabf7;padding:14px;font-size:14px;border-radius:var(--r2);justify-content:flex-start" onclick="selectAlumniField('research')">🔬 Research & Science</button>
+      <button class="btn btn-block" style="background:#ff922b14;border:1.5px solid #ff922b55;color:#ff922b;padding:14px;font-size:14px;border-radius:var(--r2);justify-content:flex-start" onclick="selectAlumniField('family-business')">🏪 Parents / Family Business</button>
+      <button class="btn btn-block" style="background:#e6498014;border:1.5px solid #e6498055;color:#e64980;padding:14px;font-size:14px;border-radius:var(--r2);justify-content:flex-start" onclick="selectAlumniField('government')">🏛 Government Jobs</button>
+      <button class="btn btn-block" style="background:#20c99714;border:1.5px solid #20c99755;color:#20c997;padding:14px;font-size:14px;border-radius:var(--r2);justify-content:flex-start" onclick="selectAlumniField('teaching')">📚 Teaching Field</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ AUTH MODAL ══════════ -->
+<div id="auth-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div style="text-align:center;margin-bottom:26px">
+      <div id="auth-portal-badge" style="margin-bottom:12px"></div>
+      <div class="logo-icon" style="margin:0 auto 14px;width:50px;height:50px;font-size:20px;animation:none">P</div>
+      <h2 id="auth-title" style="font-size:24px;font-weight:700;margin-bottom:6px">Welcome Back</h2>
+      <p id="auth-sub" style="color:var(--tx2);font-size:14px">Sign in to continue</p>
+    </div>
+    <!-- Admin register extra fields -->
+    <div id="auth-admin-reg-fields" class="col hidden">
+      <div class="field"><label class="label">Full Name *</label><input class="inp" id="admin-reg-name" placeholder="Your full name"/></div>
+      <div class="field">
+        <label class="label">Role you'll play *</label>
+        <select class="inp" id="admin-reg-position">
+          <option value="">Select a role…</option>
+          <option value="Placement Coordinator">Placement Coordinator</option>
+          <option value="Alumni Mentor">Alumni Mentor</option>
+          <option value="Guest Lecturer">Guest Lecturer</option>
+          <option value="Training & Placement Officer">Training & Placement Officer</option>
+          <option value="Entrepreneurship">Entrepreneurship</option>
+          <option value="Higher Studies / Research">Higher Studies / Research</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field"><label class="label">College Register No *</label><input class="inp" id="admin-reg-roll" placeholder="e.g. 17BCS001"/></div>
+        <div class="field"><label class="label">Year of Graduation *</label><input class="inp" id="admin-reg-gradyear" type="number" min="1980" max="2100" placeholder="e.g. 2018"/></div>
+      </div>
+      <div class="field"><label class="label">Degree / Branch *</label><input class="inp" id="admin-reg-degree" placeholder="e.g. B.E. Computer Science &amp; Engineering"/></div>
+      <div class="field"><label class="label">Department *</label><input class="inp" id="admin-reg-dept" placeholder="e.g. Computer Science &amp; Engineering"/></div>
+      <div class="field"><label class="label">College / Institution</label><input class="inp" id="admin-reg-college" placeholder="Kongu Engineering College"/></div>
+      <div style="font-size:12px;color:var(--tx3);line-height:1.5;margin:-2px 0 4px">
+        Alumni sign-up requires your official college e-mail ending in <b>@kongu.edu</b>. Your register number, graduation year and degree are checked against college records before approval.
+      </div>
+    </div>
+    <!-- Student register extra fields -->
+    <div id="auth-register-fields" class="col hidden">
+      <div class="field"><label class="label">Full Name *</label><input class="inp" id="reg-name" placeholder="e.g. Arjun Sharma"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field"><label class="label">Roll No *</label><input class="inp" id="reg-roll" placeholder="CS2024001"/></div>
+        <div class="field"><label class="label">Branch</label><input class="inp" id="reg-branch" placeholder="CSE"/></div>
+      </div>
+      <div class="field"><label class="label">CGPA</label><input class="inp" id="reg-cgpa" type="number" placeholder="8.5" step="0.1" min="0" max="10"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field"><label class="label">Section</label><input class="inp" id="reg-section" placeholder="e.g. A"/></div>
+        <div class="field"><label class="label">Year</label><input class="inp" id="reg-year" placeholder="2025-26"/></div>
+      </div>
+    </div>
+    <div class="col" style="margin-top:4px">
+      <div class="field"><label class="label">Email *</label><input class="inp" id="auth-email" placeholder="you@example.com" type="email"/></div>
+      <div class="field"><label class="label">Password *</label><input class="inp" id="auth-pass" placeholder="••••••••" type="password"/></div>
+      <div id="auth-hint" style="background:var(--surf2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--tx3);display:none"></div>
+      <div id="auth-error" class="hidden" style="background:rgba(249,106,106,.1);border:1px solid rgba(249,106,106,.3);border-radius:8px;padding:10px 14px;color:var(--rd);font-size:14px"></div>
+      <button class="btn btn-primary btn-block" id="auth-submit-btn" onclick="submitAuth()">Sign In</button>
+      <div id="auth-register-toggle" class="hidden" style="text-align:center;font-size:14px;color:var(--tx2)">
+        <span id="auth-switch-text">Don't have an account?</span>
+        <button style="background:none;color:var(--pu2);font-weight:700;margin-left:6px;font-family:var(--ff-body)" onclick="toggleAuthMode()" id="auth-switch-btn">Register</button>
+      </div>
+    </div>
+    <button style="display:block;margin:14px auto 0;background:none;color:var(--tx3);font-size:13px;cursor:pointer;font-family:var(--ff-body)" onclick="closeAuth()">← Back</button>
+  </div>
+</div>
+
+<!-- ══════════ STUDENT DETAIL MODAL ══════════ -->
+<div id="student-detail-modal" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:560px">
+    <div class="row-between" style="margin-bottom:20px">
+      <h3 style="font-size:20px;font-weight:700">Student Details</h3>
+      <button style="background:none;color:var(--tx3);font-size:20px;cursor:pointer" onclick="document.getElementById('student-detail-modal').classList.add('hidden')">✕</button>
+    </div>
+    <div id="student-detail-content"></div>
+  </div>
+</div>
+
+<!-- ══════════ SHARE EXPERIENCE MODAL ══════════ -->
+<div id="share-modal" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:540px">
+    <div class="row-between" style="margin-bottom:22px">
+      <h3 style="font-size:20px;font-weight:700">🎉 Share Your Experience</h3>
+      <button style="background:none;color:var(--tx3);font-size:20px;cursor:pointer" onclick="closeShareModal()">✕</button>
+    </div>
+    <div class="col">
+      <div class="field"><label class="label">Company</label>
+        <select class="inp" id="share-company">
+          <option>TCS</option><option>Infosys</option><option>Wipro</option><option>Zoho</option>
+          <option>Amazon</option><option>Microsoft</option><option>Accenture</option><option>Cognizant</option>
+          <option>HCL</option><option>Capgemini</option><option>IBM</option><option>LTI</option>
+          <option>HCL</option><option>Capgemini</option>
+        </select>
+      </div>
+      <div class="field"><label class="label">Role / Position</label><input class="inp" id="share-role" placeholder="e.g. Software Engineer"/></div>
+      <div class="field"><label class="label">Package Offered</label><input class="inp" id="share-package" placeholder="e.g. 6.5 LPA"/></div>
+      <div class="field"><label class="label">Your Experience *</label><textarea class="inp" id="share-experience" placeholder="Describe your interview journey..." style="min-height:100px"></textarea></div>
+      <div class="field"><label class="label">Tips (one per line)</label><textarea class="inp" id="share-tips" placeholder="Key tips for other students..." style="min-height:80px"></textarea></div>
+      <button class="btn btn-primary btn-block" onclick="submitExperience()">🚀 Share Experience</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ADD ADMIN MODAL (by Holder) ══════════ -->
+<div id="add-admin-modal" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:440px">
+    <div class="row-between" style="margin-bottom:22px">
+      <h3 style="font-size:20px;font-weight:700">Add New Alumni</h3>
+      <button style="background:none;color:var(--tx3);font-size:20px;cursor:pointer" onclick="document.getElementById('add-admin-modal').classList.add('hidden')">✕</button>
+    </div>
+    <div class="col">
+      <div class="field"><label class="label">Full Name *</label><input class="inp" id="new-admin-name" placeholder="Alumni Name"/></div>
+      <div class="field"><label class="label">Email *</label><input class="inp" id="new-admin-email" placeholder="admin@example.com" type="email"/></div>
+      <div class="field"><label class="label">Password *</label><input class="inp" id="new-admin-pass" placeholder="Password" type="password"/></div>
+      <div class="field"><label class="label">Department</label><input class="inp" id="new-admin-dept" placeholder="e.g. Training & Placement"/></div>
+      <button class="btn btn-success btn-block" onclick="addNewAdmin()">✓ Create Alumni</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ LANDING PAGE ══════════════════ -->
+<div id="landing">
+  <nav class="land-nav">
+    <div class="row" style="gap:10px">
+      <div class="logo-icon" style="animation:none">P</div>
+      <div style="font-family:var(--ff-head);font-weight:700;font-size:18px">Placement<span style="color:var(--pu2)">Pro</span></div>
+    </div>
+    <div class="row">
+      <button class="btn btn-ghost btn-sm" onclick="showPortalSelector()">Sign In</button>
+      <button class="btn btn-primary btn-sm" onclick="openAuth('student-register')">Get Started Free</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="land-hero">
+    <div style="max-width:820px">
+      <div class="hero-chip">🎓 Trusted by 50,000+ Students Across India</div>
+      <h1 class="hero-h1">Crack Your Dream<br>Company Placement</h1>
+      <p class="hero-sub">Prepare for TCS, Infosys, Amazon, Microsoft & more with company-specific exam patterns, real-time mock tests, and detailed performance analytics.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:40px">
+        <button class="btn btn-primary" style="padding:14px 36px;font-size:16px" onclick="openAuth('student-register')">Start Preparing Free →</button>
+        <button class="btn btn-outline" style="padding:14px 28px" onclick="showPortalSelector()">Sign In to Portal</button>
+      </div>
+      <div class="portal-selector">
+        <div class="portal-card student" onclick="openAuth('student-login')"><div class="portal-icon">🎓</div><div class="portal-title">Student</div><div class="portal-desc">Take tests, view results & company questions</div></div>
+        <div class="portal-card admin" onclick="openAuth('admin-login')"><div class="portal-icon">🛡</div><div class="portal-title">Alumni</div><div class="portal-desc">Manage students & view performance</div></div>
+        <div class="portal-card holder" onclick="openAuth('holder-login')"><div class="portal-icon">👑</div><div class="portal-title">Admin</div><div class="portal-desc">Manage alumni & platform settings</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPANIES STRIP -->
+  <div class="land-co-scroll">
+    <div style="text-align:center;margin-bottom:28px">
+      <div class="section-tag">12+ Top Companies</div>
+      <h2 class="section-h2" style="font-size:28px">Prepare for India's Top Recruiters</h2>
+    </div>
+    <div class="land-co-grid">
+      <div class="co-mini-card"><div class="co-icon" style="background:#003366">TCS</div><div class="co-name">TCS</div><div class="co-pkg">₹3.5–7 LPA · 450 seats</div><span class="badge badge-gd">Medium</span></div>
+      <div class="co-mini-card"><div class="co-icon" style="background:#007cc3">INF</div><div class="co-name">Infosys</div><div class="co-pkg">₹3.6–8 LPA · 320 seats</div><span class="badge badge-or">Medium-Hard</span></div>
+      <div class="co-mini-card"><div class="co-icon" style="background:#341c5c">WIP</div><div class="co-name">Wipro</div><div class="co-pkg">₹3.5–6.5 LPA · 280 seats</div><span class="badge badge-gn">Easy-Med</span></div>
+      <div class="co-mini-card"><div class="co-icon" style="background:#c0392b">ZOH</div><div class="co-name">Zoho</div><div class="co-pkg">₹5–12 LPA · 120 seats</div><span class="badge badge-rd">Hard</span></div>
+      <div class="co-mini-card"><div class="co-icon" style="background:#FF9900;color:#111">AMZ</div><div class="co-name">Amazon</div><div class="co-pkg">₹8–25 LPA · 60 seats</div><span class="badge badge-rd">Hard</span></div>
+      <div class="co-mini-card"><div class="co-icon" style="background:#00A4EF">MSF</div><div class="co-name">Microsoft</div><div class="co-pkg">₹12–40 LPA · 40 seats</div><span class="badge badge-rd">Very Hard</span></div>
+      <div class="co-mini-card"><div class="co-icon" style="background:#A100FF">ACC</div><div class="co-name">Accenture</div><div class="co-pkg">₹4.5–8 LPA · 200 seats</div><span class="badge badge-gd">Medium</span></div>
+      <div class="co-mini-card"><div class="co-icon" style="background:#1a6eb5">CTS</div><div class="co-name">Cognizant</div><div class="co-pkg">₹4–7 LPA · 250 seats</div><span class="badge badge-gn">Easy-Med</span></div>
+      <div class="co-mini-card"><div class="co-icon" style="background:#0077C8">HCL</div><div class="co-name">HCL Tech</div><div class="co-pkg">₹3.5–6 LPA · 380 seats</div><span class="badge badge-gn">Easy-Med</span></div>
+      <div class="co-mini-card"><div class="co-icon" style="background:#0070AD">CAP</div><div class="co-name">Capgemini</div><div class="co-pkg">₹4–7.5 LPA · 300 seats</div><span class="badge badge-gd">Medium</span></div>
+      <div class="co-mini-card"><div class="co-icon" style="background:#1F70C1">IBM</div><div class="co-name">IBM India</div><div class="co-pkg">₹5–10 LPA · 150 seats</div><span class="badge badge-or">Medium-Hard</span></div>
+      <div class="co-mini-card"><div class="co-icon" style="background:#E63312">LTI</div><div class="co-name">LTIMindtree</div><div class="co-pkg">₹4.5–9 LPA · 180 seats</div><span class="badge badge-gd">Medium</span></div>
+    </div>
+  </div>
+
+  <!-- INTERVIEW EXPERIENCES -->
+  <div class="exp-section">
+    <div style="text-align:center;max-width:1100px;margin:0 auto">
+      <div class="section-tag">🏆 Success Stories</div>
+      <h2 class="section-h2">Students Who Cracked It!</h2>
+      <p style="color:var(--tx2);font-size:15px">Real experiences from students placed through PlacementPro</p>
+    </div>
+    <div class="exp-grid" style="max-width:1100px;margin:40px auto 0" id="experiences-container"></div>
+    <div style="text-align:center;margin-top:28px">
+      <button class="btn btn-outline" onclick="openShareModal()" id="share-exp-btn" style="display:none">✍ Share Your Experience</button>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="land-features">
+    <div style="text-align:center">
+      <div class="section-tag">Platform Features</div>
+      <h2 class="section-h2">Everything to Get You Placed</h2>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-icon">⏱</div><div class="feat-title">Real-time Mock Tests</div><p class="feat-desc">Timed exams with countdown, auto-submit, and smooth question navigation.</p></div>
+      <div class="feat-card"><div class="feat-icon">💻</div><div class="feat-title">Online Code Editor</div><p class="feat-desc">Built-in JS editor with compile & run support — just like the real thing.</p></div>
+      <div class="feat-card"><div class="feat-icon">📊</div><div class="feat-title">Performance Analytics</div><p class="feat-desc">Round-wise score tracking and visual charts to identify weak areas.</p></div>
+      <div class="feat-card"><div class="feat-icon">🏢</div><div class="feat-title">12+ Companies</div><p class="feat-desc">TCS, Infosys, Amazon, Microsoft, Zoho, Wipro, Accenture, Cognizant, HCL, Capgemini, IBM, LTIMindtree.</p></div>
+      <div class="feat-card"><div class="feat-icon">🏆</div><div class="feat-title">Interview Experiences</div><p class="feat-desc">Read & share real placement experiences from successful students.</p></div>
+      <div class="feat-card"><div class="feat-icon">🛡</div><div class="feat-title">Multi-Role Access</div><p class="feat-desc">Separate portals for students, alumni and website holder with role-based access.</p></div>
+    </div>
+  </div>
+
+  <div style="background:var(--bg2);border-top:1px solid var(--bdr);padding:28px 60px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px">
+    <div style="font-family:var(--ff-head);font-weight:700;font-size:16px">Placement<span style="color:var(--pu2)">Pro</span> Portal</div>
+    <div style="font-size:13px;color:var(--tx3)">© 2025 PlacementPro. All rights reserved.</div>
+    <div style="display:flex;gap:16px;font-size:13px;color:var(--tx2)"><span>TCS</span><span>Infosys</span><span>Amazon</span><span>Microsoft</span><span>Wipro</span><span>Zoho</span></div>
+  </div>
+</div>
+
+<!-- ══════════════════ APP SHELL ══════════════════ -->
+<div id="app" class="hidden" style="display:none">
+  <div id="sidebar">
+    <div class="nav-logo">
+      <div class="logo-icon">P</div>
+      <div><div class="logo-text">Placement<span style="color:var(--pu2)">Pro</span></div><div id="sidebar-role-label" class="logo-sub">PORTAL</div></div>
+    </div>
+    <div class="nav-items" id="nav-items"></div>
+    <div class="nav-footer">
+      <div class="user-mini">
+        <div class="row" style="gap:10px;align-items:center;margin-bottom:8px">
+          <div class="avatar-sm" id="sidebar-avatar" style="width:34px;height:34px;font-size:13px;overflow:hidden">U</div>
+          <div style="min-width:0;flex:1">
+            <div class="user-mini-name" id="sidebar-user-name">Loading...</div>
+            <div class="user-mini-email" id="sidebar-user-email">...</div>
+          </div>
+        </div>
+        <div id="sidebar-user-badge"></div>
+      </div>
+      <button class="btn btn-ghost btn-sm btn-block" onclick="logout()" style="justify-content:center">🚪 Sign Out</button>
+    </div>
+  </div>
+
+  <div id="main-content">
+    <!-- STUDENT PAGES -->
+    <div id="page-dashboard" class="page">
+      <div style="margin-bottom:28px"><h1 id="dash-greeting" style="font-size:26px;font-weight:700;margin-bottom:6px"></h1><p style="color:var(--tx2)">Continue your placement preparation journey</p></div>
+      <div class="g4" style="margin-bottom:26px" id="dash-stats"></div>
+      <div class="g2">
+        <div class="card"><h3 style="font-family:var(--ff-head);font-size:17px;font-weight:600;margin-bottom:20px">Company Tracks</h3><div id="dash-company-tracks" class="col" style="gap:12px"></div></div>
+        <div class="col">
+          <div class="card"><h3 style="font-family:var(--ff-head);font-size:16px;font-weight:600;margin-bottom:16px">Quick Actions</h3>
+            <div class="col" style="gap:10px">
+              <button class="btn btn-primary btn-block" onclick="navigate('companies')">🚀 Start Mock Test</button>
+              <button class="btn btn-outline btn-block" onclick="navigate('co-questions')">📚 Company Questions</button>
+              <button class="btn btn-ghost btn-block" onclick="navigate('performance')">📊 View Analytics</button>
+            </div>
+          </div>
+          <div class="card"><h3 style="font-family:var(--ff-head);font-size:16px;font-weight:600;margin-bottom:16px">Recent Results</h3><div id="dash-recent"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-companies" class="page">
+      <div style="margin-bottom:26px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Companies</h1><p style="color:var(--tx2)">Choose a company to start your preparation</p></div>
+      <div id="companies-list" class="g2"></div>
+      <div id="company-detail" class="hidden"></div>
+    </div>
+
+    <div id="page-co-questions" class="page">
+      <div style="margin-bottom:26px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Company Interview Questions</h1><p style="color:var(--tx2)">Browse real questions asked in company interviews</p></div>
+      <div class="tab-row" id="co-q-tabs"></div>
+      <div id="co-q-content"></div>
+    </div>
+
+    <div id="page-performance" class="page">
+      <div style="margin-bottom:26px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Performance Analytics</h1><p style="color:var(--tx2)">Track your progress across all companies</p></div>
+      <div id="perf-content"></div>
+    </div>
+
+    <div id="page-profile" class="page">
+      <div style="margin-bottom:26px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">My Profile</h1><p style="color:var(--tx2)">Manage your personal information</p></div>
+      <div style="max-width:640px">
+        <div class="card">
+          <div class="row" style="margin-bottom:26px;gap:20px">
+            <div class="col" style="gap:8px;align-items:center">
+              <div class="avatar-lg" id="profile-avatar" style="overflow:hidden">A</div>
+              <input type="file" id="pf-avatar-input" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden" onchange="onAvatarPicked(event)"/>
+              <div class="row" style="gap:6px">
+                <button class="btn btn-outline btn-sm" type="button" onclick="document.getElementById('pf-avatar-input').click()">📷 Change</button>
+                <button class="btn btn-ghost btn-sm" type="button" id="pf-avatar-remove" onclick="removeAvatar()">Remove</button>
+              </div>
+            </div>
+            <div>
+              <h2 id="profile-name-display" style="font-size:20px;font-weight:700;margin-bottom:4px"></h2>
+              <p id="profile-email-display" style="color:var(--tx2);font-size:14px;margin-bottom:10px"></p>
+              <div id="profile-badges" class="row" style="gap:8px;flex-wrap:wrap"></div>
+              <p id="profile-bio-display" style="color:var(--tx2);font-size:13px;font-style:italic;margin-top:10px"></p>
+            </div>
+          </div>
+          <div class="g2">
+            <div class="field"><label class="label">Full Name</label><input class="inp" id="pf-name"/></div>
+            <div class="field"><label class="label">Email (read-only)</label><input class="inp" id="pf-email" disabled/></div>
+            <div class="field"><label class="label">Branch</label><input class="inp" id="pf-branch" placeholder="Computer Science"/></div>
+            <div class="field"><label class="label">CGPA</label><input class="inp" id="pf-cgpa" type="number" placeholder="8.5"/></div>
+            <div class="field"><label class="label">Roll No (read-only)</label><input class="inp" id="pf-roll" disabled/></div>
+            <div class="field"><label class="label">Phone</label><input class="inp" id="pf-phone" placeholder="+91 9876543210"/></div>
+          </div>
+          <div class="field" style="margin-top:4px">
+            <label class="label">Quote / About me</label>
+            <textarea class="inp" id="pf-bio" rows="3" maxlength="300" oninput="updateBioCount()" placeholder="Share a favourite quote or a short bio about yourself..." style="resize:vertical;min-height:78px;font-family:inherit"></textarea>
+            <div style="font-size:11px;color:var(--tx3);text-align:right;margin-top:4px"><span id="pf-bio-count">0</span>/300</div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:22px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="saveProfile()">💾 Save Changes</button>
+            <button class="btn btn-danger" onclick="confirmDeleteAccount()">🗑 Delete Account</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-chat" class="page">
+      <div style="margin-bottom:26px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px" id="chat-page-title">Messages</h1><p style="color:var(--tx2)" id="chat-page-subtitle">Chat directly with your contacts</p></div>
+      <div class="chat-wrap">
+        <div class="chat-contacts" id="chat-contacts"></div>
+        <div class="chat-panel" id="chat-panel">
+          <div class="chat-empty">Select a conversation to start chatting</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ ALUMNI CONNECT PAGES ══════════ -->
+    <div id="page-alumni" class="page">
+      <div style="margin-bottom:22px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Alumni Network</h1><p style="color:var(--tx2)">Find seniors working at your dream company and reach out</p></div>
+      <div id="alumni-filters" style="margin-bottom:18px"></div>
+      <div id="alumni-grid"></div>
+    </div>
+
+    <div id="page-mentorship" class="page">
+      <div style="margin-bottom:22px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px" id="mentorship-title">Mentorship & Mock Interviews</h1><p style="color:var(--tx2)" id="mentorship-sub">Book a 1:1 session with an alumnus</p></div>
+      <div id="mentorship-body"></div>
+    </div>
+
+    <div id="page-experiences" class="page">
+      <div style="margin-bottom:22px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Interview Experiences</h1><p style="color:var(--tx2)">Real, round-by-round interview stories shared by alumni</p></div>
+      <div id="experiences-body"></div>
+    </div>
+
+    <div id="page-referrals" class="page">
+      <div style="margin-bottom:22px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px" id="referrals-title">Referrals</h1><p style="color:var(--tx2)" id="referrals-sub">Request a referral from alumni at your dream company</p></div>
+      <div id="referrals-body"></div>
+    </div>
+
+    <div id="page-forum" class="page">
+      <div style="margin-bottom:22px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Q&amp;A Forum</h1><p style="color:var(--tx2)">Ask anything about placements — alumni answer</p></div>
+      <div id="forum-body"></div>
+    </div>
+
+    <!-- EXAM PAGES -->
+    <div id="page-exam" class="page">
+      <div class="exam-wrap">
+        <div class="exam-header">
+          <div><div id="exam-title" style="font-family:var(--ff-head);font-weight:700;font-size:17px;margin-bottom:3px"></div><div id="exam-q-counter" style="font-size:12px;color:var(--tx3)"></div></div>
+          <div class="row" style="gap:20px">
+            <div style="text-align:right"><div id="exam-timer" class="timer-display">00:00</div><div style="font-size:10px;color:var(--tx3);letter-spacing:.6px">TIME LEFT</div></div>
+            <button class="btn btn-outline btn-sm" onclick="submitExam(false)">Submit Exam</button>
+          </div>
+        </div>
+        <div id="exam-timer-bar" style="height:4px;border-radius:100px;background:var(--surf2);margin-bottom:20px;overflow:hidden">
+          <div id="exam-timer-fill" style="height:100%;background:var(--gn);border-radius:100px;transition:width 1s linear"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 240px;gap:20px">
+          <div>
+            <div class="q-card" id="exam-q-area"></div>
+            <div class="row-between">
+              <button class="btn btn-ghost btn-sm" id="exam-prev-btn" onclick="examNav(-1)">← Previous</button>
+              <button class="btn btn-primary btn-sm" id="exam-next-btn" onclick="examNav(1)">Next →</button>
+            </div>
+          </div>
+          <div class="q-nav-panel">
+            <div style="font-size:11px;font-weight:700;color:var(--tx3);letter-spacing:.7px;margin-bottom:14px">NAVIGATOR</div>
+            <div class="q-nav-grid" id="q-nav-grid"></div>
+            <div class="col" style="gap:7px;font-size:12px;color:var(--tx3)">
+              <div class="row" style="gap:8px"><div style="width:12px;height:12px;border-radius:3px;background:var(--pu);flex-shrink:0"></div>Current</div>
+              <div class="row" style="gap:8px"><div style="width:12px;height:12px;border-radius:3px;background:rgba(56,217,169,.3);flex-shrink:0"></div><span id="nav-answered">Answered (0)</span></div>
+              <div class="row" style="gap:8px"><div style="width:12px;height:12px;border-radius:3px;background:var(--surf2);flex-shrink:0"></div><span id="nav-unanswered">Unanswered</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-result" class="page">
+      <div class="result-wrap">
+        <div class="card" style="text-align:center;padding:50px 40px">
+          <div id="result-emoji" style="font-size:70px;margin-bottom:18px">🏆</div>
+          <h2 id="result-title" style="font-size:28px;font-weight:700;margin-bottom:8px"></h2>
+          <p id="result-sub" style="color:var(--tx2);margin-bottom:32px;font-size:15px"></p>
+          <div class="result-score-ring" id="result-ring" style="background:var(--surf2)">
+            <div class="result-num" id="result-pct"></div>
+            <div style="font-size:13px;font-weight:600" id="result-pct-label"></div>
+          </div>
+          <div class="g2" style="margin-bottom:26px;text-align:left">
+            <div style="background:var(--surf2);border-radius:12px;padding:16px"><div style="font-size:11px;color:var(--tx3);margin-bottom:8px;font-weight:700;letter-spacing:.5px">STATUS</div><div id="result-status-badge"></div></div>
+            <div style="background:var(--surf2);border-radius:12px;padding:16px"><div style="font-size:11px;color:var(--tx3);margin-bottom:8px;font-weight:700;letter-spacing:.5px">SCORE</div><div id="result-score-text" style="font-weight:700;font-size:15px"></div></div>
+          </div>
+          <div id="result-unlock-msg" class="hidden" style="background:rgba(56,217,169,.1);border:1px solid rgba(56,217,169,.3);border-radius:12px;padding:14px;margin-bottom:22px;color:var(--gn);font-weight:600">🎉 Next round has been unlocked!</div>
+          <div class="row" style="gap:12px;justify-content:center">
+            <button class="btn btn-primary" onclick="navigate('companies')">← Back to Companies</button>
+            <button class="btn btn-outline" onclick="navigate('performance')">📊 Performance</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALUMNI FIELD PAGES -->
+    <div id="page-field-placement" class="page">
+      <div style="margin-bottom:26px">
+        <h1 style="font-size:26px;font-weight:700;margin-bottom:6px">🏢 Placement & Corporate</h1>
+        <p id="field-placement-sub" style="color:var(--tx2)"></p>
+      </div>
+      <div class="g4" style="margin-bottom:24px" id="field-placement-stats"></div>
+      <div id="field-placement-body"></div>
+    </div>
+
+    <div id="page-field-entrepreneur" class="page">
+      <div style="margin-bottom:26px">
+        <h1 style="font-size:26px;font-weight:700;margin-bottom:6px">🚀 Entrepreneurship</h1>
+        <p id="field-entrepreneur-sub" style="color:var(--tx2)"></p>
+      </div>
+      <div class="g4" style="margin-bottom:24px" id="field-entrepreneur-stats"></div>
+      <div id="field-entrepreneur-body"></div>
+    </div>
+
+    <div id="page-field-freelancing" class="page">
+      <div style="margin-bottom:26px">
+        <h1 style="font-size:26px;font-weight:700;margin-bottom:6px">💻 Freelancing</h1>
+        <p id="field-freelancing-sub" style="color:var(--tx2)"></p>
+      </div>
+      <div class="g4" style="margin-bottom:24px" id="field-freelancing-stats"></div>
+      <div id="field-freelancing-body"></div>
+    </div>
+
+    <div id="page-field-research" class="page">
+      <div style="margin-bottom:26px">
+        <h1 style="font-size:26px;font-weight:700;margin-bottom:6px">🔬 Research & Science</h1>
+        <p id="field-research-sub" style="color:var(--tx2)"></p>
+      </div>
+      <div class="g4" style="margin-bottom:24px" id="field-research-stats"></div>
+      <div id="field-research-body"></div>
+    </div>
+
+    <div id="page-field-family-business" class="page">
+      <div style="margin-bottom:26px">
+        <h1 style="font-size:26px;font-weight:700;margin-bottom:6px">🏪 Parents / Family Business</h1>
+        <p id="field-family-business-sub" style="color:var(--tx2)"></p>
+      </div>
+      <div class="g4" style="margin-bottom:24px" id="field-family-business-stats"></div>
+      <div id="field-family-business-body"></div>
+    </div>
+
+    <div id="page-field-government" class="page">
+      <div style="margin-bottom:26px">
+        <h1 style="font-size:26px;font-weight:700;margin-bottom:6px">🏛 Government Jobs</h1>
+        <p id="field-government-sub" style="color:var(--tx2)"></p>
+      </div>
+      <div class="g4" style="margin-bottom:24px" id="field-government-stats"></div>
+      <div id="field-government-body"></div>
+    </div>
+
+    <div id="page-field-teaching" class="page">
+      <div style="margin-bottom:26px">
+        <h1 style="font-size:26px;font-weight:700;margin-bottom:6px">📚 Teaching Field</h1>
+        <p id="field-teaching-sub" style="color:var(--tx2)"></p>
+      </div>
+      <div class="g4" style="margin-bottom:24px" id="field-teaching-stats"></div>
+      <div id="field-teaching-body"></div>
+    </div>
+
+    <!-- ADMIN PAGES -->
+    <div id="page-admin-dashboard" class="page">
+      <div style="margin-bottom:28px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Alumni Dashboard</h1><p style="color:var(--tx2)">Platform overview and management</p></div>
+      <div class="g4" style="margin-bottom:26px" id="admin-stats"></div>
+      <div class="g2" id="admin-overview"></div>
+    </div>
+
+    <div id="page-admin-students" class="page">
+      <div class="row-between" style="margin-bottom:22px">
+        <div><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Students</h1><p id="admin-students-count" style="color:var(--tx2)"></p></div>
+      </div>
+      <input class="inp" id="student-search" placeholder="🔍 Search by name, email, or roll number..." style="max-width:420px;margin-bottom:20px" oninput="filterStudents()"/>
+      <div class="card tbl-wrap"><table class="tbl" id="students-table"></table></div>
+    </div>
+
+    <div id="page-admin-companies" class="page">
+      <div style="margin-bottom:26px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Companies</h1><p style="color:var(--tx2)" id="admin-companies-sub">Companies relevant to your alumni role</p></div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="row-between" style="gap:14px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--tx3);letter-spacing:.5px;margin-bottom:6px">ALUMNI ROLE</div>
+            <div style="font-size:13px;color:var(--tx2)">Pick a role to see the companies mapped to it</div>
+          </div>
+          <select class="inp" id="admin-companies-role" style="max-width:280px" onchange="setAdminCompanyRole(this.value)"></select>
+        </div>
+        <div id="admin-companies-roletabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"></div>
+      </div>
+      <div class="g2" id="admin-companies-grid"></div>
+    </div>
+
+    <div id="page-admin-questions" class="page">
+      <div style="margin-bottom:22px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Question Bank</h1><p style="color:var(--tx2)">Browse exam questions by round type</p></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px" id="qbank-tabs"></div>
+      <div id="qbank-list" class="col" style="gap:14px"></div>
+    </div>
+
+    <div id="page-admin-results" class="page">
+      <div style="margin-bottom:26px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Exam Results</h1><p id="results-count" style="color:var(--tx2)"></p></div>
+      <div class="card tbl-wrap"><table class="tbl" id="results-table"></table></div>
+    </div>
+
+    <div id="page-admin-ranking" class="page">
+      <div class="row-between" style="margin-bottom:22px;flex-wrap:wrap;gap:12px">
+        <div><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">🏆 Student Ranking</h1><p id="admin-ranking-count" style="color:var(--tx2)"></p></div>
+        <button class="btn btn-ghost btn-sm" onclick="exportRankingCSV('admin')">⬇ Export CSV</button>
+      </div>
+      <div class="g4" style="margin-bottom:20px" id="admin-ranking-tiers"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+        <input class="inp" id="admin-ranking-search" placeholder="🔍 Search by name or roll number..." style="max-width:320px" oninput="filterRanking('admin')"/>
+        <input class="inp" id="admin-ranking-branch" placeholder="Filter by branch e.g. CSE" style="max-width:220px" onchange="renderAdminRanking()"/>
+        <input class="inp" id="admin-ranking-section" placeholder="Section e.g. A" style="max-width:160px" onchange="renderAdminRanking()"/>
+        <input class="inp" id="admin-ranking-year" placeholder="Year e.g. 2025-26" style="max-width:180px" onchange="renderAdminRanking()"/>
+      </div>
+      <div id="admin-ranking-grid" class="g3"></div>
+    </div>
+
+    <!-- WEBSITE HOLDER PAGES -->
+    <div id="page-holder-dashboard" class="page">
+      <div style="margin-bottom:28px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">👑 Admin Dashboard</h1><p style="color:var(--tx2)">Platform-wide overview and admin management</p></div>
+      <div class="g4" style="margin-bottom:26px" id="holder-stats"></div>
+      <div class="card"><h3 style="font-family:var(--ff-head);font-size:17px;font-weight:600;margin-bottom:18px">Platform Summary</h3><div id="holder-summary"></div></div>
+    </div>
+
+    <div id="page-holder-admins" class="page">
+      <div class="row-between" style="margin-bottom:22px">
+        <div><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Alumni Management</h1><p id="holder-admins-count" style="color:var(--tx2)"></p></div>
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('add-admin-modal').classList.remove('hidden')">+ Add Alumni</button>
+      </div>
+      <div id="holder-pending-requests"></div>
+      <div style="font-size:12px;color:var(--tx3);font-weight:700;letter-spacing:.5px;margin-bottom:12px">ACTIVE ALUMNI</div>
+      <div id="admins-grid" class="g3"></div>
+    </div>
+
+    <div id="page-holder-students" class="page">
+      <div style="margin-bottom:22px"><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">All Students</h1><p style="color:var(--tx2)">Platform-wide student overview</p></div>
+      <div class="card tbl-wrap"><table class="tbl" id="holder-students-table"></table></div>
+    </div>
+
+    <div id="page-holder-ranking" class="page">
+      <div class="row-between" style="margin-bottom:22px;flex-wrap:wrap;gap:12px">
+        <div><h1 style="font-size:26px;font-weight:700;margin-bottom:6px">🏆 Student Ranking</h1><p id="holder-ranking-count" style="color:var(--tx2)"></p></div>
+        <button class="btn btn-ghost btn-sm" onclick="exportRankingCSV('holder')">⬇ Export CSV</button>
+      </div>
+      <div class="g4" style="margin-bottom:20px" id="holder-ranking-tiers"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+        <input class="inp" id="holder-ranking-search" placeholder="🔍 Search by name or roll number..." style="max-width:320px" oninput="filterRanking('holder')"/>
+        <input class="inp" id="holder-ranking-branch" placeholder="Filter by branch e.g. CSE" style="max-width:220px" onchange="renderHolderRanking()"/>
+        <input class="inp" id="holder-ranking-section" placeholder="Section e.g. A" style="max-width:160px" onchange="renderHolderRanking()"/>
+        <input class="inp" id="holder-ranking-year" placeholder="Year e.g. 2025-26" style="max-width:180px" onchange="renderHolderRanking()"/>
+      </div>
+      <div id="holder-ranking-grid" class="g3"></div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════ DELETE ACCOUNT MODAL ══════════ -->
+<div id="delete-account-modal" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:420px;text-align:center">
+    <div style="font-size:56px;margin-bottom:14px">⚠️</div>
+    <h2 style="font-size:22px;font-weight:700;margin-bottom:10px;color:var(--rd)">Delete Your Account?</h2>
+    <p style="color:var(--tx2);font-size:14px;line-height:1.75;margin-bottom:8px">
+      This will <strong style="color:var(--rd)">permanently delete</strong> your account, all your exam scores, and progress data. This action <strong>cannot be undone</strong>.
+    </p>
+    <div style="background:rgba(249,106,106,.08);border:1px solid rgba(249,106,106,.25);border-radius:10px;padding:12px 16px;margin:18px 0;font-size:13px;color:var(--rd)">
+      🔒 Please type <strong>DELETE</strong> below to confirm
+    </div>
+    <input class="inp" id="delete-confirm-input" placeholder='Type "DELETE" to confirm' style="margin-bottom:18px;text-align:center;letter-spacing:1px" oninput="validateDeleteInput()"/>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost btn-block" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn btn-danger btn-block" id="confirm-delete-btn" onclick="executeDeleteAccount()" disabled style="opacity:.4;cursor:not-allowed">🗑 Delete Forever</button>
+    </div>
+  </div>
+</div>
+
