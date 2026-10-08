@@ -10,8 +10,15 @@ const connectDB = require('./config/db');
 
 const app = express();
 
-app.use(cors({ origin: true, credentials: true }));
-app.use(express.json({ limit: '8mb' })); // large-ish: profile pictures travel as data-URLs
+const corsOptions = {
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // large-ish: profile pictures travel as data-URLs
 
 // ── Routes (1:1 with the original PHP files) ───────────────────
 app.use('/api/login.php', require('./routes/login'));
