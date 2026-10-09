@@ -17,8 +17,7 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // large-ish: profile pictures travel as data-URLs
+app.use(cors(corsOptions)); // large-ish: profile pictures travel as data-URLs
 
 // ── Routes (1:1 with the original PHP files) ───────────────────
 app.use('/api/login.php', require('./routes/login'));
