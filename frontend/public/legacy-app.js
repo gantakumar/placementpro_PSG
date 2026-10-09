@@ -230,7 +230,7 @@ const DEFAULT_EXPERIENCES = [
 //   Override with REACT_APP_API_BASE in frontend/.env if needed.
 const API_BASE = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_BASE)
   ? process.env.REACT_APP_API_BASE
-  : 'https://placementpro-psg-xtkk.vercel.app/api';
+  : 'https://placementpro-psg-hud1.vercel.app/api';
 
 // ── Token helpers (localStorage only stores the session token) ─
 function getToken(){ return localStorage.getItem('pp_token'); }
