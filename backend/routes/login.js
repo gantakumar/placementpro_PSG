@@ -9,10 +9,14 @@ const ExamResult = require('../models/ExamResult');
 const CompletedRound = require('../models/CompletedRound');
 const { jsonOk, jsonErr, generateToken, sessionExpiry } = require('../middleware/helpers');
 
+
 router.post('/', async (req, res) => {
-  const email = (req.body.email || '').trim().toLowerCase();
-  const pass = (req.body.password || '').trim();
-  const portal = (req.body.portal || 'student').trim();
+  const body = req.body || {};
+
+  const email = String(body.email || '').trim().toLowerCase();
+  const pass = String(body.password || '').trim();
+  const portal = String(body.portal || 'student').trim();
+
 
   if (!email || !pass) return jsonErr(res, 'Email and password are required');
 

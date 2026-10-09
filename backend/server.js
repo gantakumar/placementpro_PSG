@@ -18,6 +18,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions)); // large-ish: profile pictures travel as data-URLs
+app.use(express.json());
 
 // ── Routes (1:1 with the original PHP files) ───────────────────
 app.use('/api/login.php', require('./routes/login'));
