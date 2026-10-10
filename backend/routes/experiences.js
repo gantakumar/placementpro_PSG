@@ -1,6 +1,4 @@
 // routes/experiences.js — /api/experiences.php
-// Company-wise interview experience feed: alumni (and placed students) post
-// round-by-round breakdowns; everyone can upvote and comment.
 const express = require('express');
 const router = express.Router();
 
@@ -44,77 +42,101 @@ async function hydrate(list, meId) {
 
 // ── GET /api/experiences.php ───────────────────────────────────
 router.get('/', requireAuth(), async (req, res) => {
-  const filter = {};
-  if (req.query.company) filter.company = new RegExp(esc(req.query.company), 'i');
-  if (req.query.q) {
-    const rx = new RegExp(esc(req.query.q), 'i');
-    filter.$or = [{ company: rx }, { role: rx }, { tips: rx }];
+  try {
+    const filter = {};
+    if (req.query.company) filter.company = new RegExp(esc(req.query.company), 'i');
+    if (req.query.q) {
+      const rx = new RegExp(esc(req.query.q), 'i');
+      filter.$or = [{ company: rx }, { role: rx }, { tips: rx }];
+    }
+    if (req.query.mine === '1') filter.author = req.user._id;
+
+    const rows = await InterviewExperience.find(filter).sort({ created_at: -1 }).limit(100).lean();
+    let list = await hydrate(rows, req.user._id);
+    if (req.query.sort === 'top') list = list.sort((a, b) => b.upvotes - a.upvotes);
+
+    const companies = [...new Set(rows.map((r) => r.company))].sort();
+    return jsonOk(res, { experiences: list, companies });
+  } catch (err) {
+    console.error('Experiences get error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to load experiences.' });
   }
-  if (req.query.mine === '1') filter.author = req.user._id;
-
-  const sort = req.query.sort === 'top' ? { created_at: -1 } : { created_at: -1 };
-  const rows = await InterviewExperience.find(filter).sort(sort).limit(100).lean();
-  let list = await hydrate(rows, req.user._id);
-  if (req.query.sort === 'top') list = list.sort((a, b) => b.upvotes - a.upvotes);
-
-  const companies = [...new Set(rows.map((r) => r.company))].sort();
-  return jsonOk(res, { experiences: list, companies });
 });
 
 // ── POST /api/experiences.php ──────────────────────────────────
 router.post('/', requireAuth(), async (req, res) => {
-  const b = req.body || {};
-  if (!b.company || !String(b.company).trim()) return jsonErr(res, 'Company is required.');
+  try {
+    const b = req.body || {};
+    if (!b.company || !String(b.company).trim()) return jsonErr(res, 'Company is required.');
 
-  const rounds = Array.isArray(b.rounds)
-    ? b.rounds.filter((r) => r && r.name).map((r) => ({ name: String(r.name).trim(), details: String(r.details || '').slice(0, 2000) }))
-    : [];
+    const rounds = Array.isArray(b.rounds)
+      ? b.rounds.filter((r) => r && r.name).map((r) => ({ name: String(r.name).trim(), details: String(r.details || '').slice(0, 2000) }))
+      : [];
 
-  const doc = await InterviewExperience.create({
-    author: req.user._id,
-    company: String(b.company).trim(),
-    role: String(b.role || '').trim(),
-    year: String(b.year || '').trim(),
-    ctc: String(b.ctc || '').trim(),
-    result: ['selected', 'rejected', 'in-process'].includes(b.result) ? b.result : 'selected',
-    difficulty: ['Easy', 'Medium', 'Hard', 'Very Hard'].includes(b.difficulty) ? b.difficulty : 'Medium',
-    rounds,
-    tips: String(b.tips || '').slice(0, 3000),
-  });
+    const doc = await InterviewExperience.create({
+      author: req.user._id,
+      company: String(b.company).trim(),
+      role: String(b.role || '').trim(),
+      year: String(b.year || '').trim(),
+      ctc: String(b.ctc || '').trim(),
+      result: ['selected', 'rejected', 'in-process'].includes(b.result) ? b.result : 'selected',
+      difficulty: ['Easy', 'Medium', 'Hard', 'Very Hard'].includes(b.difficulty) ? b.difficulty : 'Medium',
+      rounds,
+      tips: String(b.tips || '').slice(0, 3000),
+    });
 
-  return jsonOk(res, { message: 'Experience shared', id: doc._id });
+    return jsonOk(res, { message: 'Experience shared', id: doc._id });
+  } catch (err) {
+    console.error('Experiences create error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to share experience.' });
+  }
 });
 
 // ── POST /api/experiences.php/:id/upvote ───────────────────────
 router.post('/:id/upvote', requireAuth(), async (req, res) => {
-  const doc = await InterviewExperience.findById(req.params.id);
-  if (!doc) return jsonErr(res, 'Experience not found.', 404);
-  const i = doc.upvotes.findIndex((u) => String(u) === String(req.user._id));
-  if (i >= 0) doc.upvotes.splice(i, 1); else doc.upvotes.push(req.user._id);
-  await doc.save();
-  return jsonOk(res, { upvotes: doc.upvotes.length, upvoted: i < 0 });
+  try {
+    const doc = await InterviewExperience.findById(req.params.id);
+    if (!doc) return jsonErr(res, 'Experience not found.', 404);
+    const i = doc.upvotes.findIndex((u) => String(u) === String(req.user._id));
+    if (i >= 0) doc.upvotes.splice(i, 1); else doc.upvotes.push(req.user._id);
+    await doc.save();
+    return jsonOk(res, { upvotes: doc.upvotes.length, upvoted: i < 0 });
+  } catch (err) {
+    console.error('Experience upvote error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to upvote experience.' });
+  }
 });
 
 // ── POST /api/experiences.php/:id/comment ──────────────────────
 router.post('/:id/comment', requireAuth(), async (req, res) => {
-  const text = String((req.body || {}).text || '').trim();
-  if (!text) return jsonErr(res, 'Comment cannot be empty.');
-  const doc = await InterviewExperience.findById(req.params.id);
-  if (!doc) return jsonErr(res, 'Experience not found.', 404);
-  doc.comments.push({ user: req.user._id, text: text.slice(0, 800) });
-  await doc.save();
-  return jsonOk(res, { message: 'Comment added' });
+  try {
+    const text = String((req.body || {}).text || '').trim();
+    if (!text) return jsonErr(res, 'Comment cannot be empty.');
+    const doc = await InterviewExperience.findById(req.params.id);
+    if (!doc) return jsonErr(res, 'Experience not found.', 404);
+    doc.comments.push({ user: req.user._id, text: text.slice(0, 800) });
+    await doc.save();
+    return jsonOk(res, { message: 'Comment added' });
+  } catch (err) {
+    console.error('Experience comment error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to add comment.' });
+  }
 });
 
 // ── DELETE /api/experiences.php/:id ────────────────────────────
 router.delete('/:id', requireAuth(), async (req, res) => {
-  const doc = await InterviewExperience.findById(req.params.id);
-  if (!doc) return jsonErr(res, 'Experience not found.', 404);
-  if (String(doc.author) !== String(req.user._id) && req.user.role !== 'holder') {
-    return jsonErr(res, 'Access denied.', 403);
+  try {
+    const doc = await InterviewExperience.findById(req.params.id);
+    if (!doc) return jsonErr(res, 'Experience not found.', 404);
+    if (String(doc.author) !== String(req.user._id) && req.user.role !== 'holder') {
+      return jsonErr(res, 'Access denied.', 403);
+    }
+    await doc.deleteOne();
+    return jsonOk(res, { message: 'Experience deleted' });
+  } catch (err) {
+    console.error('Experience delete error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to delete experience.' });
   }
-  await doc.deleteOne();
-  return jsonOk(res, { message: 'Experience deleted' });
 });
 
 module.exports = router;

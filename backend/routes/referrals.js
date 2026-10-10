@@ -1,5 +1,4 @@
 // routes/referrals.js — /api/referrals.php
-// Students request referrals from alumni; alumni accept / decline / mark referred.
 const express = require('express');
 const router = express.Router();
 
@@ -31,59 +30,78 @@ async function hydrate(rows) {
 
 // ── GET /api/referrals.php — my referral requests (both roles) ──
 router.get('/', requireAuth(), async (req, res) => {
-  const filter = req.user.role === 'admin' ? { alumni: req.user._id } : { student: req.user._id };
-  if (req.query.status) filter.status = req.query.status;
-  const rows = await ReferralRequest.find(filter).sort({ created_at: -1 }).lean();
-  return jsonOk(res, { referrals: await hydrate(rows) });
+  try {
+    const filter = req.user.role === 'admin' ? { alumni: req.user._id } : { student: req.user._id };
+    if (req.query.status) filter.status = req.query.status;
+    const rows = await ReferralRequest.find(filter).sort({ created_at: -1 }).lean();
+    return jsonOk(res, { referrals: await hydrate(rows) });
+  } catch (err) {
+    console.error('Referrals get error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to load referral requests.' });
+  }
 });
 
 // ── POST /api/referrals.php — student creates a request ─────────
 router.post('/', requireAuth('student'), async (req, res) => {
-  const b = req.body || {};
-  if (!b.alumni) return jsonErr(res, 'Choose an alumnus to request from.');
-  if (!b.company || !String(b.company).trim()) return jsonErr(res, 'Company is required.');
-  if (!b.role || !String(b.role).trim()) return jsonErr(res, 'Role is required.');
+  try {
+    const b = req.body || {};
+    if (!b.alumni) return jsonErr(res, 'Choose an alumnus to request from.');
+    if (!b.company || !String(b.company).trim()) return jsonErr(res, 'Company is required.');
+    if (!b.role || !String(b.role).trim()) return jsonErr(res, 'Role is required.');
 
-  const alumni = await User.findOne({ _id: b.alumni, role: 'admin', status: 'active' }).lean();
-  if (!alumni) return jsonErr(res, 'Alumni not found.', 404);
-  if (alumni.open_to_referral === false) return jsonErr(res, 'This alumnus is not accepting referral requests right now.');
+    const alumni = await User.findOne({ _id: b.alumni, role: 'admin', status: 'active' }).lean();
+    if (!alumni) return jsonErr(res, 'Alumni not found.', 404);
+    if (alumni.open_to_referral === false) return jsonErr(res, 'This alumnus is not accepting referral requests right now.');
 
-  const pending = await ReferralRequest.countDocuments({ student: req.user._id, alumni: alumni._id, status: 'pending' });
-  if (pending) return jsonErr(res, 'You already have a pending request with this alumnus.');
+    const pending = await ReferralRequest.countDocuments({ student: req.user._id, alumni: alumni._id, status: 'pending' });
+    if (pending) return jsonErr(res, 'You already have a pending request with this alumnus.');
 
-  await ReferralRequest.create({
-    student: req.user._id,
-    alumni: alumni._id,
-    company: String(b.company).trim(),
-    role: String(b.role).trim(),
-    job_link: String(b.job_link || '').trim(),
-    resume_link: String(b.resume_link || '').trim(),
-    message: String(b.message || '').slice(0, 1200),
-  });
+    await ReferralRequest.create({
+      student: req.user._id,
+      alumni: alumni._id,
+      company: String(b.company).trim(),
+      role: String(b.role).trim(),
+      job_link: String(b.job_link || '').trim(),
+      resume_link: String(b.resume_link || '').trim(),
+      message: String(b.message || '').slice(0, 1200),
+    });
 
-  return jsonOk(res, { message: 'Referral request sent' });
+    return jsonOk(res, { message: 'Referral request sent' });
+  } catch (err) {
+    console.error('Referral create error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to send referral request.' });
+  }
 });
 
 // ── POST /api/referrals.php/:id/status — alumni responds ────────
 router.post('/:id/status', requireAuth('admin'), async (req, res) => {
-  const status = (req.body || {}).status;
-  if (!['accepted', 'referred', 'declined'].includes(status)) return jsonErr(res, 'Invalid status.');
+  try {
+    const status = (req.body || {}).status;
+    if (!['accepted', 'referred', 'declined'].includes(status)) return jsonErr(res, 'Invalid status.');
 
-  const r = await ReferralRequest.findOne({ _id: req.params.id, alumni: req.user._id });
-  if (!r) return jsonErr(res, 'Request not found.', 404);
+    const r = await ReferralRequest.findOne({ _id: req.params.id, alumni: req.user._id });
+    if (!r) return jsonErr(res, 'Request not found.', 404);
 
-  r.status = status;
-  r.response_note = String((req.body || {}).note || '').slice(0, 800);
-  await r.save();
+    r.status = status;
+    r.response_note = String((req.body || {}).note || '').slice(0, 800);
+    await r.save();
 
-  return jsonOk(res, { message: 'Request updated' });
+    return jsonOk(res, { message: 'Request updated' });
+  } catch (err) {
+    console.error('Referral status error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to update referral status.' });
+  }
 });
 
 // ── GET /api/referrals.php/pending-count — badge for alumni ─────
 router.get('/pending-count', requireAuth(), async (req, res) => {
-  if (req.user.role !== 'admin') return jsonOk(res, { count: 0 });
-  const count = await ReferralRequest.countDocuments({ alumni: req.user._id, status: 'pending' });
-  return jsonOk(res, { count });
+  try {
+    if (req.user.role !== 'admin') return jsonOk(res, { count: 0 });
+    const count = await ReferralRequest.countDocuments({ alumni: req.user._id, status: 'pending' });
+    return jsonOk(res, { count });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Failed to load count.' });
+  }
 });
 
 module.exports = router;

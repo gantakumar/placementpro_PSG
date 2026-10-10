@@ -226,11 +226,27 @@ const DEFAULT_EXPERIENCES = [
 // API CONFIG  &  STORAGE HELPERS
 // ═══════════════════════════════════════
 
-// ▸ Points at the new Express + MongoDB backend (see backend/server.js).
-//   Override with REACT_APP_API_BASE in frontend/.env if needed.
-const API_BASE = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_BASE)
-  ? process.env.REACT_APP_API_BASE
-  : 'https://placementpro-psg-hud1.vercel.app/api';
+// ▸ Points at the Express + MongoDB backend (see backend/server.js).
+//   Prioritizes window.__API_BASE__, then process.env.REACT_APP_API_BASE,
+//   falling back to the production backend deployment URL.
+const API_BASE = (typeof window !== 'undefined' && window.__API_BASE__)
+  || (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_BASE)
+  || 'https://placementpro-psg-hud1.vercel.app/api';
+
+function getApiUrl(endpoint) {
+  const base = (
+    (typeof window !== 'undefined' && window.__API_BASE__) ||
+    (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_BASE) ||
+    API_BASE
+  ).replace(/\/+$/, '');
+
+  let path = endpoint.startsWith('/') ? endpoint : '/' + endpoint;
+  // Prevent duplicate /api prefixes like /api/api/alumni.php
+  if (base.endsWith('/api') && path.startsWith('/api/')) {
+    path = path.slice(4);
+  }
+  return base + path;
+}
 
 // ── Token helpers (localStorage only stores the session token) ─
 function getToken(){ return localStorage.getItem('pp_token'); }
@@ -240,18 +256,25 @@ function clearToken(){ localStorage.removeItem('pp_token'); }
 // ── Generic API call ──────────────────────────────────────────
 async function api(endpoint, options = {}) {
   const token = getToken();
-  const headers = { 'Content-Type': 'application/json' };
-  if (token) headers['X-Token'] = token;
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (token) {
+    headers['X-Token'] = token;
+    headers['Authorization'] = 'Bearer ' + token;
+  }
   try {
-    const res = await fetch(API_BASE + endpoint, {
-      headers,
+    const url = getApiUrl(endpoint);
+    const res = await fetch(url, {
       ...options,
+      headers,
       body: options.body ? JSON.stringify(options.body) : undefined,
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => null);
+    if (!data) {
+      return { success: false, message: `Server error (${res.status} ${res.statusText || 'No response data'})` };
+    }
     return data;
   } catch (e) {
-    return { success: false, message: 'Network error: ' + e.message };
+    return { success: false, message: 'Network error: ' + (e.message || 'Failed to fetch') };
   }
 }
 

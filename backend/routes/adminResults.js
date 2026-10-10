@@ -6,26 +6,31 @@ const ExamResult = require('../models/ExamResult');
 const { jsonOk, jsonErr, requireAuth } = require('../middleware/helpers');
 
 router.get('/', requireAuth(), async (req, res) => {
-  if (!['admin', 'holder'].includes(req.user.role)) return jsonErr(res, 'Forbidden', 403);
+  try {
+    if (!['admin', 'holder'].includes(req.user.role)) return jsonErr(res, 'Forbidden', 403);
 
-  const rows = await ExamResult.find().populate('user_id', 'name roll_no branch email').sort({ taken_at: -1 }).lean();
+    const rows = await ExamResult.find().populate('user_id', 'name roll_no branch email').sort({ taken_at: -1 }).lean();
 
-  const results = rows.map((r) => ({
-    id: r._id,
-    company: r.company,
-    round: r.round,
-    score: r.score,
-    total_q: r.total_q,
-    correct_q: r.correct_q,
-    passed: r.passed,
-    taken_at: r.taken_at,
-    name: r.user_id ? r.user_id.name : '—',
-    roll_no: r.user_id ? r.user_id.roll_no : '',
-    branch: r.user_id ? r.user_id.branch : '',
-    email: r.user_id ? r.user_id.email : '',
-  }));
+    const results = rows.map((r) => ({
+      id: r._id,
+      company: r.company,
+      round: r.round,
+      score: r.score,
+      total_q: r.total_q,
+      correct_q: r.correct_q,
+      passed: r.passed,
+      taken_at: r.taken_at,
+      name: r.user_id ? r.user_id.name : '—',
+      roll_no: r.user_id ? r.user_id.roll_no : '',
+      branch: r.user_id ? r.user_id.branch : '',
+      email: r.user_id ? r.user_id.email : '',
+    }));
 
-  return jsonOk(res, { results, total: results.length });
+    return jsonOk(res, { results, total: results.length });
+  } catch (err) {
+    console.error('Admin results error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to load exam results.' });
+  }
 });
 
 module.exports = router;

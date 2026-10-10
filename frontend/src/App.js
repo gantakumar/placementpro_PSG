@@ -37,6 +37,12 @@ function App() {
         // re-runs (e.g. React Fast Refresh during development).
         if (!window.__placementProScriptLoaded) {
           window.__placementProScriptLoaded = true;
+
+          // Propagate CRA environment variable to global scope for legacy scripts
+          window.__API_BASE__ =
+            (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_BASE) ||
+            'https://placementpro-psg-hud1.vercel.app/api';
+
           const script = document.createElement('script');
           script.src = '/legacy-app.js';
           script.async = false;
